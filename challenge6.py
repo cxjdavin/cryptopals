@@ -139,5 +139,6 @@ def main(argv):
     print()
 
 if __name__ == "__main__":
+  print("Usage: python3 challenge6.py <Optional: bestKL. Default = 1>")
   main(sys.argv)
 

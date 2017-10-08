@@ -84,30 +84,38 @@ def pkcs7(x, block_size = AES_block_size):
 
 '''
 AES encryption/decryption via ECB and CBC modes
-ECB: From library
-CBC: Written from scratch on using ECB as black box (See challenge10)
+lib_ECB: From library
+ECB: ECB mode with padding handling
+CBC: CBC mode written from scratch using _ECB as black box (See challenge10)
 '''
-def ECB_decrypt(CT_bytes, key_bytes):
+def lib_ECB_decrypt(CT_bytes, key_bytes):
   cipher = AES.new(key_bytes, AES.MODE_ECB)
   PT_bytes = cipher.decrypt(CT_bytes)
+  return PT_bytes
 
-  # Remove padding
-  padded = int(PT_bytes[-1])
-  return bytes(PT_bytes[:-padded])
-
-def ECB_encrypt(PT_bytes, key_bytes):
-  PT_bytes = pkcs7(PT_bytes)
-  assert(len(PT_bytes) % AES_block_size == 0)
+def lib_ECB_encrypt(PT_bytes, key_bytes):
   cipher = AES.new(key_bytes, AES.MODE_ECB)
   CT_bytes = cipher.encrypt(PT_bytes)
   return bytes(CT_bytes)
+
+# Remove padding
+def ECB_decrypt(CT_bytes, key_bytes):
+  PT_bytes = lib_ECB_decrypt(CT_bytes, key_bytes)
+  padded = int(PT_bytes[-1])
+  return bytes(PT_bytes[:-padded])
+
+# pkcs7
+def ECB_encrypt(PT_bytes, key_bytes):
+  PT_bytes = pkcs7(PT_bytes)
+  assert(len(PT_bytes) % AES_block_size == 0)
+  return lib_ECB_encrypt(PT_bytes, key_bytes)
 
 def CBC_decrypt(CT_bytes, key_bytes, IV):
   assert(len(CT_bytes) % AES_block_size == 0)
   PT_bytes = bytearray()
   CT_block = IV
   for i in range(len(CT_bytes) // AES_block_size):
-    PT_bytes += fixed_xor(CT_block, ECB_decrypt(get_block(CT_bytes, i), key_bytes))
+    PT_bytes += fixed_xor(CT_block, lib_ECB_decrypt(get_block(CT_bytes, i), key_bytes))
     CT_block = get_block(CT_bytes, i)
   return bytes(PT_bytes)
 
@@ -116,7 +124,7 @@ def CBC_encrypt(PT_bytes, key_bytes, IV):
   CT_bytes = bytearray()
   CT_block = IV
   for i in range(len(PT_bytes) // AES_block_size):
-    CT_block = ECB_encrypt(fixed_xor(CT_block, get_block(PT_bytes, i)), key_bytes)
+    CT_block = lib_ECB_encrypt(fixed_xor(CT_block, get_block(PT_bytes, i)), key_bytes)
     CT_bytes += CT_block
   return bytes(CT_bytes)
 
@@ -151,4 +159,10 @@ def random_bytes(n):
   for i in range(n):
     output.append(random.randint(0, 255))
   return bytes(output)
+
+'''
+Returns random bytes of length [lb, ub] 
+'''
+def random_bytes_range(lb, ub):
+  return random_bytes(random.randint(lb, ub+1))
 

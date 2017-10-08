@@ -44,8 +44,7 @@ from challenge_util import *
 
 def encryption_oracle(PT_bytes, AES_key):
   append = codecs.decode(codecs.encode("Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"), "base64")
-  PT_bytes = pkcs7(PT_bytes + append)
-  CT_bytes = ECB_encrypt(PT_bytes, AES_key)
+  CT_bytes = ECB_encrypt(PT_bytes + append, AES_key)
   return bytes(CT_bytes)
 
 def main():

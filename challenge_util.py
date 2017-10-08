@@ -120,6 +120,7 @@ def CBC_decrypt(CT_bytes, key_bytes, IV):
   return bytes(PT_bytes)
 
 def CBC_encrypt(PT_bytes, key_bytes, IV):
+  PT_bytes = pkcs7(PT_bytes)
   assert(len(PT_bytes) % AES_block_size == 0)
   CT_bytes = bytearray()
   CT_block = IV

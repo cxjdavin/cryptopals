@@ -87,6 +87,7 @@ Perform padding attack by guessing bytes from the back
 def padding_attack(oracle, IV, CT_bytes):
   guess = bytearray()
   for i in range(len(CT_bytes) // AES_block_size):
+    # Form pairs of CT blocks where we modify front block to guess the back block
     block_idx = len(CT_bytes) // AES_block_size - 1 - i
     target_block = get_block(CT_bytes, block_idx)
     if block_idx == 0:
@@ -95,7 +96,11 @@ def padding_attack(oracle, IV, CT_bytes):
       prev_block = get_block(CT_bytes, block_idx - 1)
     CT_fragment = prev_block + target_block
 
+    # Initialize guess block with all zeroes
     guess_block = bytearray(AES_block_size)
+
+    # Guess from the last byte to the first byte of the back block in CT_fragment
+    # Abuse: CBC decryption allows manipulation of 2nd block by modifying 1st block
     pad_len = 1
     while pad_len <= AES_block_size:
       modification = bytearray(2 * AES_block_size)
@@ -105,12 +110,16 @@ def padding_attack(oracle, IV, CT_bytes):
         pad_len += 1
       else:
         if guess_block[-pad_len] < 255:
+          # Guess next byte value
           guess_block[-pad_len] += 1
         else:
-          # Backtrack
+          # Unlucky! Plaintext caused padding to be valid (this is rare as pad_len increases)
+          # Reset current byte guess, backtrack to previous pad_len, and continue guessing
           guess_block[-pad_len] = 0
           pad_len -= 1
           guess_block[-pad_len] += 1
+
+    # Prepend guess block
     guess = guess_block + guess
   return bytes(guess)
 

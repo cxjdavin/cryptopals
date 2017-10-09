@@ -22,10 +22,13 @@ from challenge_util import *
 
 def strip_padding(x_bytes):
   padding = int(x_bytes[-1])
-  for i in range(padding):
-    if x_bytes[-(i+1)] != padding:
-      return False
-  return bytes(x_bytes[:-padding])
+  if padding == 0:
+    return False
+  else:
+    for i in range(padding):
+      if x_bytes[-(i+1)] != padding:
+        return False
+    return bytes(x_bytes[:-padding])
 
 def main():
   x1 = codecs.encode("ICE ICE BABY\x04\x04\x04\x04")

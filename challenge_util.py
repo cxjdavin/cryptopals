@@ -129,6 +129,19 @@ def CBC_encrypt(PT_bytes, key_bytes, IV):
     CT_bytes += CT_block
   return bytes(CT_bytes)
 
+def CTR_encrypt(PT_bytes, key_bytes, nonce):
+  ctr = 0
+  keystream = bytearray()
+  while len(keystream) < len(PT_bytes):
+    msg = nonce.to_bytes(8, "little") + ctr.to_bytes(8, "little")
+    keystream += lib_ECB_encrypt(msg, key_bytes)
+    ctr += 1
+  CT_bytes = fixed_xor(PT_bytes, keystream[:len(PT_bytes)])
+  return bytes(CT_bytes)
+
+def CTR_decrypt(CT_bytes, key_bytes, nonce):
+  return CTR_encrypt(CT_bytes, key_bytes, nonce)
+
 '''
 Given bytes x, return array of (i,j) where x[i] = x[j]
 '''

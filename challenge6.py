@@ -49,7 +49,7 @@ def hamming(x, y):
   count = 0
   for i in range(len(x)):
     xored = x[i] ^ y[i]
-    xored_bin = bin(xored).strip("0b")
+    xored_bin = bin(xored)[1:]
     for j in range(len(xored_bin)):
       if xored_bin[j] == "1":
         count += 1

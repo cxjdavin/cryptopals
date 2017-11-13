@@ -106,7 +106,6 @@ def main(seed, N):
     x = MT.extract_number()
     print(x)
 
-import random
 if __name__ == "__main__":
   if len(sys.argv) >= 3 and sys.argv[1].isdigit() and sys.argv[2].isdigit():
     seed = int(sys.argv[1])

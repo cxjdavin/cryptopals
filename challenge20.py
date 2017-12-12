@@ -18,7 +18,7 @@ from challenge_util import *
 def produce_CT():
   all_PT_bytes = read_challenge("challenge20.txt", "base64", True)
   random_AES_key = random_bytes(AES_block_size)
-  fixed_nonce = 0
+  fixed_nonce = b"\x00\x00\x00\x00\x00\x00\x00\x00"
   all_CT_bytes = [CTR_encrypt(PT, random_AES_key, fixed_nonce) for PT in all_PT_bytes]
   return all_PT_bytes, all_CT_bytes
 

@@ -6,6 +6,7 @@ Will be added over time as I progress through the challenges
 import codecs
 import random
 import sys
+import time
 from Crypto.Cipher import AES
 
 #
@@ -129,11 +130,11 @@ def CBC_encrypt(PT_bytes, key_bytes, IV):
     CT_bytes += CT_block
   return bytes(CT_bytes)
 
-def CTR_encrypt(PT_bytes, key_bytes, nonce):
+def CTR_encrypt(PT_bytes, key_bytes, nonce_bytes):
   ctr = 0
   keystream = bytearray()
   while len(keystream) < len(PT_bytes):
-    msg = nonce.to_bytes(8, "little") + ctr.to_bytes(8, "little")
+    msg = nonce_bytes + ctr.to_bytes(8, "little")
     keystream += lib_ECB_encrypt(msg, key_bytes)
     ctr += 1
   CT_bytes = fixed_xor(PT_bytes, keystream[:len(PT_bytes)])

@@ -45,7 +45,7 @@ from challenge_util import *
 
 def main():
   key = codecs.encode("YELLOW SUBMARINE")
-  nonce = 0
+  nonce = b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
   CT_bytes = codecs.encode("L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==")
   CT_bytes = codecs.decode(CT_bytes, "base64")
